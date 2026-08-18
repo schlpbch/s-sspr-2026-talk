@@ -1,6 +1,6 @@
 # Orthogonality and Dimensionality in Airline Cluster Analysis using PCA and Kernel PCA
 
-Talk for [S+SSPR 2026](https://sspr2026.github.io/) (IAPR Joint International
+Talk for [S+SSPR 2026](https://ssspr2026.inf.unibe.ch/) (IAPR Joint International
 Workshops on Statistical Techniques in Pattern Recognition and Structural and
 Syntactic Pattern Recognition), Bern, August 24–26, 2026.
 
