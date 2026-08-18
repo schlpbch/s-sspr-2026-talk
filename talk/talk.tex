@@ -1,0 +1,789 @@
+%% ============================================================
+%%  S+SSPR 2026 talk — Orthogonality and Dimensionality in
+%%  Airline Cluster Analysis using PCA and Kernel PCA
+%%  Story line: "The linearity certificate"
+%%  Compile: lualatex talk.tex   (see Makefile)
+%% ============================================================
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usepackage{asc-theme}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{calc, positioning, arrows.meta}
+
+%% ── Helper commands (as in the paper) ───────────────────────
+\newcommand{\pc}[1]{PC#1}
+\newcommand{\cl}[1]{$C_{#1}$}
+\newcommand{\kmeans}{$k$-means}
+\newcommand{\ari}{ARI}
+\newcommand{\pr}{\textit{PR}}
+\newcommand{\sil}{\textit{Sil}}
+\newcommand{\db}{\textit{DB}}
+\newcommand{\kpca}{KPCA}
+
+%% ── Plot chrome in asc palette; cluster colors as in paper ──
+\pgfplotsset{strip/.style={
+  width=1.08\textwidth, height=3.1cm,
+  ytick={1,2,3,4,5,6},
+  yticklabels={$C_5$,$C_4$,$C_3$,$C_2$,$C_1$,$C_0$},
+  ymin=0.5, ymax=6.5,
+  tick label style={font=\fontsize{4.5}{5}\selectfont, color=ascSlate600},
+  title style={font=\tiny\bfseries, color=ascSlate900},
+}}
+\pgfplotsset{asc/.style={
+  axis line style={ascSlate400},
+  every tick/.append style={ascSlate400},
+  tick label style={font=\tiny, color=ascSlate600},
+  label style={font=\scriptsize, color=ascSlate600},
+  title style={font=\scriptsize\bfseries, color=ascSlate900},
+  grid=both,
+  grid style={line width=0.25pt, draw=ascSlate100},
+  legend style={font=\tiny, draw=ascSlate100, fill=white, text=ascSlate600,
+                inner sep=2.5pt, row sep=0.5pt},
+}}
+
+\title[Orthogonality \& Dimensionality in Airline Cluster Analysis]%
+  {Orthogonality and Dimensionality in Airline Cluster Analysis using PCA and Kernel PCA}
+\author{Andreas Schlapbach}
+\date{S+SSPR 2026 --- Bern, August 24--26}
+
+\begin{document}
+
+
+\begin{frame}[plain]
+  \vspace*{0.9cm}
+  {\plexmedium\small\color{ascTeal600}S+SSPR 2026 --- Bern, August 24--26\par}
+  \vspace{0.35cm}
+  {\usebeamerfont{title}\usebeamercolor[fg]{title}%
+    Orthogonality and Dimensionality in Airline Cluster Analysis using PCA and Kernel PCA\par}
+  \vspace{0.18cm}
+  {\color{ascTeal500}\rule{28pt}{2.4pt}\par}
+  \vspace{0.30cm}
+  {\large\muted{The linearity certificate: how to show a dataset needs no kernel}\par}
+  \vspace{0.85cm}
+  {\usebeamerfont{author}\usebeamercolor[fg]{author}Andreas Schlapbach\par}
+  \vspace{0.10cm}
+  {\usebeamerfont{institute}\usebeamercolor[fg]{institute}%
+    Swiss Federal Railways (SBB), Switzerland\footnotemark[1]\quad\textbullet\quad
+    {\color{ascTeal600}asc.engineering}\quad\textbullet\quad
+    arXiv:2606.08322\par}
+  \vspace{0.55cm}
+  \footnotetext[1]{\tiny\color{ascSlate400}The views expressed are the author's
+    own and do not necessarily reflect the views or policies of SBB.}
+\end{frame}
+
+
+
+\begin{frame}{Kernel PCA turns 28}
+  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as
+  a kernel eigenvalue problem}, Neural Computation, 1998.}
+  \vspace{0.35cm}
+
+  \bigstatement{For 28 years, the question has been:\\
+    \emph{which} kernel reveals the nonlinearity?}
+  \vspace{0.3cm}
+  \bigstatement{\color{ascTeal600}How do you certify that a dataset contains none?}
+  \vspace{0.35cm}
+
+  \begin{itemize}
+    \item A certified \emph{no} is a result: it licenses every linear tool
+      downstream --- PCA, $k$-means in score space, linear ridge.
+    \item Papers rarely issue that certificate explicitly. This talk shows
+      how, on a published study.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{The Case Under Audit}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Renold et al., J.\ Air Transport Management, 2023}
+      \vspace{0.15cm}
+      \begin{itemize}
+        \item US airline profit cycles, \textbf{1995--2020}
+        \item Seven variables: operating profit, fuel, wages, RPM,
+          load factor, yield, other expenses
+        \item \kmeans{} with $k=6$, PCA, system-dynamics modelling
+        \item \emph{Headline claim:} COVID-19 does \emph{not} permanently 
+	  disrupt airline profit regimes: post-pandemic patterns revert
+          to pre-COVID clusters.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Two risks left unexamined}
+      \vspace{0.1cm}
+      \begin{enumerate}
+        \item The seven inputs are \teal{highly collinear} ---
+          secular growth drives them all. Does that distort the Euclidean
+          distances \kmeans{} partitions by?
+        \item The choice \teal{$k=6$ has no quantitative justification} ---
+          no quality criterion, no alternative $k$ compared.
+      \end{enumerate}
+      \vspace{0.15cm}
+      \muted{If either is material, the regime labels --- and the headline
+      claim --- cannot be taken at face value.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Seven Variables, 2.46 Effective Dimensions}
+  The first measurement: the \textbf{participation ratio} of the eigenvalue
+  spectrum --- how many dimensions actually carry signal.
+  \vspace{0.2cm}
+  \begin{equation*}
+    \pr \;=\; \frac{\bigl(\sum_i \lambda_i\bigr)^2}{\sum_i \lambda_i^2}
+        \;=\; \frac{100^2}{59.8^2 + 16.7^2 + 11.3^2 + 7.8^2 + 3.9^2 + 0.4^2 + 0.1^2}
+        \;\approx\; {\color{ascTeal600}\mathbf{2.46}}
+  \end{equation*}
+  \vspace{0.25cm}
+  \begin{itemize}
+    \item Of seven nominal dimensions, $\sim$2.5 are real: \teal{severe
+      collinearity}, one dominant shared growth factor.
+    \item \textbf{Question:} Does a low \pr{} \emph{predict} a near-linear, low-dimensional manifold
+    \item \textbf{Plan:} establish the linear geometry, then attack it
+      with every kernel family we have. If the linear story survives, it is
+      certified.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Three Spaces}
+  All 26 standardized annual observations, clustered in three representations:
+  
+  \begin{center}
+  \small
+  \begin{tabular}{@{}clrr@{}}
+  \toprule
+  \textbf{\pc{}} & \textbf{Interpretation} &
+  \textbf{Variance (\%)} & \textbf{Cumulative (\%)} \\
+  \midrule
+  1 & Secular US aviation growth     & 59.8 & 59.8 \\
+  2 & Profit/wage boom--bust tension & 16.7 & 76.5 \\
+  3 & Fuel-price shocks              & 11.3 & 87.8 \\
+  4 & \teal{COVID-era yield collapse} &  7.8 & 95.6 \\
+  5--7 & Noise                       &  4.4 & 100.0 \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{0.35cm}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \centering\textbf{7D-raw}\\[2pt]
+      \muted{\small original variables,\\collinearity included}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering\textbf{3D-\pc{}}\\[2pt]
+      \muted{\small 87.8\% of variance,\\geometrically clean}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering\textbf{4D-\pc{}}\\[2pt]
+      \muted{\small 95.6\%, adds the\\COVID yield dimension}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Finding I: Assignments Are Invariant Across Spaces}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \scriptsize
+      \setlength{\tabcolsep}{4pt}
+      \begin{tabular}{@{}l l c c c@{}}
+      \toprule
+      \textbf{Years} & \textbf{Regime} &
+      \textbf{7D-raw} & \textbf{3D-\pc{}} & \textbf{4D-\pc{}} \\
+      \midrule
+      1995--1999 & 9/11 era (early) & \cl{2} & \cl{2} & \cl{2} \\
+      2000--2005 & 9/11 + post-9/11 & \cl{1} & \cl{1} & \cl{1}/\cl{4} \\
+      2006--2010 & Financial Crisis & \cl{4} & \cl{4} & \cl{4} \\
+      2011--2014 & Post-FC          & \cl{5} & \cl{5} & \cl{5} \\
+      2015--2019 & Pre-/post-COVID  & \cl{0} & \cl{0} & \cl{0} \\
+      2020       & COVID            & \cl{3} & \cl{3} & \cl{3} \\
+      \midrule
+      \multicolumn{2}{@{}l}{\textit{Agreement vs.\ 7D-raw}} &
+        --- & 26/26 & 25/26 \\
+      \multicolumn{2}{@{}l}{\textit{\ari{} vs.\ 7D-raw}} &
+        --- & \textbf{1.000} & 0.884 \\
+      \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small $k=6$ in 3D-\pc{} space reproduces the 7D-raw partition
+      \teal{bit for bit}.
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \textbf{Why doesn't collinearity rearrange anything?}
+      \vspace{0.1cm}
+      \begin{itemize}
+        \item It stretches distances $\sim$3$\times$ \emph{along} \pc{1} ---
+          without reordering points \emph{within} it.
+        \item The six clusters are contiguous \emph{time bands} along \pc{1}:
+          stretched, but no year crosses a boundary.
+        \item Cross-sectional clusters (legacy vs.\ low-cost carriers) would
+          cut \emph{across} the growth axis --- there, distortion would be
+          severe.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{The Geometry Behind the Invariance}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \centering
+      \begin{tikzpicture}
+      \begin{axis}[asc,
+        view={120}{30},
+        width=\textwidth, height=5.6cm,
+        xlabel=\pc{1} (59.8\%), ylabel=\pc{2} (16.7\%), zlabel=\pc{3} (11.3\%),
+        xmin=-3, xmax=3, ymin=-2.5, ymax=2.5, zmin=-2, zmax=2,
+        every axis plot/.append style={line width=1.2pt, mark size=2.2pt},
+      ]
+      \addplot3[color=blue, mark=diamond*, only marks] coordinates {
+        (-2.8,-0.8,-1.2) (-2.5,-0.5,-1.0) (-2.7,-0.7,-1.1)
+        (-2.9,-0.9,-1.3) (-2.6,-0.6,-0.9)};
+      \addplot3[color=orange, mark=square*, only marks] coordinates {
+        (-1.5,1.8,0.4) (-1.3,1.9,0.3) (-1.6,1.7,0.5)
+        (-1.2,1.6,0.2) (-1.4,1.8,0.4) (-1.5,1.9,0.3)};
+      \addplot3[color=green!70!black, mark=pentagon*, only marks] coordinates {
+        (0.8,0.9,-0.6) (0.5,1.0,-0.5) (0.9,0.8,-0.7)
+        (1.1,1.1,-0.8) (0.6,0.7,-0.4)};
+      \addplot3[color=brown, mark=asterisk, only marks] coordinates {
+        (1.6,0.2,-0.3) (1.7,0.1,-0.2) (1.5,0.0,-0.4) (1.8,0.3,-0.1)};
+      \addplot3[color=red, mark=*, only marks] coordinates {
+        (2.1,0.5,-0.2) (2.3,0.4,0.1) (2.2,0.6,0.0)
+        (2.0,0.3,-0.1) (2.4,0.7,0.2)};
+      \addplot3[color=purple, mark=triangle*, only marks] coordinates {
+        (2.2,-1.8,1.6)};
+      \end{axis}
+      \end{tikzpicture}
+
+      {\scriptsize\muted{3D-\pc{} space, 87.8\% of variance. Chronological
+      bands left to right:
+      {\color{blue}1995--99}, {\color{orange}2000--05},
+      {\color{green!70!black}2006--10}, {\color{brown}2011--14},
+      {\color{red}2015--19}; {\color{purple}2020} displaced.}}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \vspace{0.3cm}
+      \begin{itemize}
+        \item The six-cluster taxonomy is a \teal{temporal partition} along
+          \pc{1} --- early losses $\to$ recovery $\to$ peak profit.
+        \item Secondary structure: profit--wage tension (\pc{2}), fuel shocks
+          (\pc{3}).
+        \item COVID 2020 is a \teal{geometric singularity}, displaced by the
+          yield collapse (load factor $85\% \to 59\%$).
+      \end{itemize}
+      \vspace{0.2cm}
+      \muted{\small This is the linear story. Now we stress-test it.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Finding II: The Clean Space Reveals $k=3$}
+  \begin{center}
+  \begin{tikzpicture}
+  \begin{axis}[asc,
+    name=silplot,
+    width=0.46\textwidth, height=4.4cm,
+    xlabel={$k$ (number of clusters)}, ylabel={Silhouette coefficient},
+    xmin=1.5, xmax=9.5, ymin=0.38, ymax=0.56,
+    xtick={2,3,4,5,6,7,8,9},
+    legend style={at={(0.98,0.05)}, anchor=south east},
+  ]
+  \addplot[red!80!black, thick, solid, mark=*, mark size=1.8pt]
+    coordinates {(2,0.431)(3,0.443)(4,0.429)(5,0.413)(6,0.448)(7,0.449)(8,0.439)(9,0.416)};
+  \addlegendentry{7D-raw}
+  \addplot[blue!80!black, thick, dashed, mark=square*, mark size=1.8pt]
+    coordinates {(2,0.506)(3,0.523)(4,0.481)(5,0.421)(6,0.448)(7,0.429)(8,0.416)(9,0.430)};
+  \addlegendentry{3D-\pc{}}
+  \addplot[ascSlate400, thick, dotted, mark=triangle*, mark size=1.8pt]
+    coordinates {(2,0.458)(3,0.472)(4,0.466)(5,0.460)(6,0.490)(7,0.463)(8,0.449)(9,0.410)};
+  \addlegendentry{4D-\pc{}}
+  \draw[ascTeal500, very thick] (axis cs:3,0.38) -- (axis cs:3,0.523);
+  \node[font=\tiny\bfseries, anchor=south, color=ascTeal600] at (axis cs:3,0.523) {$k^*\!=\!3$};
+  \end{axis}
+  \begin{axis}[asc,
+    at={(silplot.south east)}, xshift=1.3cm, anchor=south west,
+    width=0.46\textwidth, height=4.4cm,
+    xlabel={$k$ (number of clusters)}, ylabel={Davies--Bouldin index},
+    xmin=1.5, xmax=9.5, ymin=0.45, ymax=0.96,
+    xtick={2,3,4,5,6,7,8,9},
+    legend style={at={(0.98,0.98)}, anchor=north east},
+  ]
+  \addplot[red!80!black, thick, solid, mark=*, mark size=1.8pt]
+    coordinates {(2,0.906)(3,0.648)(4,0.658)(5,0.679)(6,0.647)(7,0.629)(8,0.613)(9,0.538)};
+  \addlegendentry{7D-raw}
+  \addplot[blue!80!black, thick, dashed, mark=square*, mark size=1.8pt]
+    coordinates {(2,0.742)(3,0.507)(4,0.603)(5,0.603)(6,0.584)(7,0.583)(8,0.596)(9,0.554)};
+  \addlegendentry{3D-\pc{}}
+  \addplot[ascSlate400, thick, dotted, mark=triangle*, mark size=1.8pt]
+    coordinates {(2,0.853)(3,0.601)(4,0.615)(5,0.569)(6,0.557)(7,0.640)(8,0.627)(9,0.578)};
+  \addlegendentry{4D-\pc{}}
+  \draw[ascTeal500, very thick] (axis cs:3,0.45) -- (axis cs:3,0.507);
+  \node[font=\tiny\bfseries, anchor=north, color=ascTeal600] at (axis cs:3,0.507) {$k^*\!=\!3$};
+  \end{axis}
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.1cm}
+  \begin{itemize}
+    \item In 3D-\pc{} space the silhouette peaks at \teal{$k=3$}, $k=6$ scores 14\% worse. In 7D-raw the curve is
+      \teal{flat}: the inflated growth axis suppresses the contrast.
+    \item Three regimes: low-profit 1995--2005, recovery 2006--14, peak
+      2015--19 (+ COVID outlier). $k=6$ is coherent but \emph{imposed}.
+    \item \muted{Suggestive, not conclusive: two internal indices, $n=26$, no
+      significance test.}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Enter the Kernels: the Certificate's Core Idea}
+  \textbf{If the manifold hides curvature, \emph{some} kernel family should
+  exploit it.} So we attack with all of them --- on the 4D-\pc{} scores,
+  assignments held fixed.
+  \vspace{0.35cm}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{Distance-based}
+        \small RBF ($\gamma$ by median pairwise distance)\\[2pt]
+        Polynomial, degree 2\\[2pt]
+        Polynomial, degree 3
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{Information-geometric}
+        \small Fisher--Mahalanobis:\\
+        $K_F(x,y) = x^{\top}\hat\Sigma^{-1}y$\\[2pt]
+        = PCA on whitened scores; amplifies \pc{4} by
+        $1/0.078 \approx 12.8\times$
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{Graph-based}
+        \small Diffusion $K=\exp(-\beta L)$\\
+        on the 5-NN graph\\[2pt]
+        local connectivity instead of a distance formula
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{itemize}
+    \item Plus the \textbf{linear kernel} as baseline ($\equiv$ standard PCA).
+    \item All bandwidths by \teal{median heuristics} --- nothing fitted,
+      nothing tuned toward a verdict.
+    \item Three families fail for three \emph{different} reasons --- their
+      agreement is evidence.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Linear PCA vs.\ RBF kernel PCA}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}
+      \begin{axis}[asc,
+        width=\textwidth, height=4.9cm,
+        xlabel=\pc{1} (59.8\%), ylabel=\pc{2} (16.7\%),
+        xmin=-3.2, xmax=2.8, ymin=-2.2, ymax=2.2,
+        title={Linear PCA},
+      ]
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(-1.9,-2.2) (-1.9,2.2)};
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(-0.2,-2.2) (-0.2,2.2)};
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(1.2,-2.2) (1.2,2.2)};
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(1.85,-2.2) (1.85,2.2)};
+      \addplot[color=red, mark=*, only marks, mark size=2pt] coordinates {
+        (2.1,0.5) (2.3,0.4) (2.2,0.6) (2.0,0.3) (2.4,0.7)};
+      \addplot[color=orange, mark=square*, only marks, mark size=2pt] coordinates {
+        (-1.5,1.8) (-1.3,1.9) (-1.6,1.7) (-1.2,1.6) (-1.4,1.8) (-1.5,1.9)};
+      \addplot[color=blue, mark=diamond*, only marks, mark size=2pt] coordinates {
+        (-2.8,-0.8) (-2.5,-0.5) (-2.7,-0.7) (-2.9,-0.9) (-2.6,-0.6)};
+      \addplot[color=purple, mark=triangle*, only marks, mark size=2.4pt] coordinates {
+        (2.2,-1.8)};
+      \addplot[color=green!70!black, mark=pentagon*, only marks, mark size=2pt] coordinates {
+        (0.8,0.9) (0.5,1.0) (0.9,0.8) (1.1,1.1) (0.6,0.7)};
+      \addplot[color=brown, mark=asterisk, only marks, mark size=2pt] coordinates {
+        (1.6,0.2) (1.7,0.1) (1.5,0.0) (1.8,0.3)};
+      \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}
+      \begin{axis}[asc,
+        width=\textwidth, height=4.9cm,
+        xlabel=\kpca{}1, ylabel=\kpca{}2,
+        xmin=-2.0, xmax=1.8, ymin=-1.7, ymax=1.5,
+        title={RBF kernel PCA ($\gamma = \gamma_{\mathrm{med}}$)},
+      ]
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(-1.25,-1.7) (-1.25,1.5)};
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(-0.35,-1.7) (-0.35,1.5)};
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(0.25,-1.7) (0.25,1.5)};
+      \addplot[ascSlate400, dashed, line width=0.5pt] coordinates {(0.8,-1.7) (0.8,1.5)};
+      \addplot[color=red, mark=*, only marks, mark size=2pt] coordinates {
+        (1.2,0.05) (1.3,0.1) (1.1,0.15) (1.4,0.0) (1.5,0.25)};
+      \addplot[color=orange, mark=square*, only marks, mark size=2pt] coordinates {
+        (-0.95,0.9) (-0.85,1.0) (-1.1,0.8) (-0.8,0.95) (-1.0,0.85) (-0.9,1.05)};
+      \addplot[color=blue, mark=diamond*, only marks, mark size=2pt] coordinates {
+        (-1.65,-0.55) (-1.5,-0.4) (-1.7,-0.5) (-1.8,-0.65) (-1.6,-0.45)};
+      \addplot[color=purple, mark=triangle*, only marks, mark size=2.4pt] coordinates {
+        (0.6,-1.6)};
+      \addplot[color=green!70!black, mark=pentagon*, only marks, mark size=2pt] coordinates {
+        (0.15,0.4) (0.05,0.5) (0.25,0.35) (0.35,0.55) (0.1,0.45)};
+      \addplot[color=brown, mark=asterisk, only marks, mark size=2pt] coordinates {
+        (0.75,0.0) (0.8,-0.05) (0.65,0.05) (0.9,-0.1)};
+      \end{axis}
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{itemize}
+    \item \teal{\ari{} = 1.000}: all 26 observations land in identical
+      clusters under the kernel map.
+    \item COVID ({\color{purple}$\blacktriangle$}) becomes \emph{more}
+      isolated --- \pc{4}'s yield collapse enters the pairwise distances of
+      the Gram matrix. $\pr \approx 2.46$ predicted this; \kpca{} confirms it.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Six Kernels, One Verdict: the \kpca{}1 Strip Charts}
+  \begin{columns}[T]
+  \begin{column}{0.32\textwidth}\centering
+    \begin{tikzpicture}\begin{axis}[asc, strip, title={Linear (= PCA baseline)}, xmin=-3.5, xmax=3.0]
+    \addplot[fill=ascSlate100, draw=none] coordinates {(1.95,2.5)(2.45,2.5)(2.45,6.5)(1.95,6.5)} -- cycle;
+    \addplot[color=red,mark=*,only marks,mark size=1.4pt] coordinates {(2.1,6)(2.3,6)(2.2,6)(2.0,6)(2.4,6)};
+    \addplot[color=orange,mark=square*,only marks,mark size=1.4pt] coordinates {(-1.5,5)(-1.3,5)(-1.6,5)(-1.2,5)(-1.4,5)(-1.5,5)};
+    \addplot[color=blue,mark=diamond*,only marks,mark size=1.4pt] coordinates {(-2.8,4)(-2.5,4)(-2.7,4)(-2.9,4)(-2.6,4)};
+    \addplot[color=purple,mark=triangle*,only marks,mark size=1.8pt] coordinates {(2.2,3)};
+    \addplot[color=green!70!black,mark=pentagon*,only marks,mark size=1.4pt] coordinates {(0.8,2)(0.5,2)(0.9,2)(1.1,2)(0.6,2)};
+    \addplot[color=brown,mark=asterisk,only marks,mark size=1.4pt] coordinates {(1.6,1)(1.7,1)(1.5,1)(1.8,1)};
+    \end{axis}\end{tikzpicture}
+  \end{column}
+  \begin{column}{0.32\textwidth}\centering
+    \begin{tikzpicture}\begin{axis}[asc, strip, title={RBF}, xmin=-2.2, xmax=2.1]
+    \addplot[fill=ascSlate100, draw=none] coordinates {(0.57,0.5)(0.93,0.5)(0.93,3.5)(0.57,3.5)} -- cycle;
+    \addplot[color=red,mark=*,only marks,mark size=1.4pt] coordinates {(1.2,6)(1.3,6)(1.1,6)(1.4,6)(1.5,6)};
+    \addplot[color=orange,mark=square*,only marks,mark size=1.4pt] coordinates {(-0.95,5)(-0.85,5)(-1.10,5)(-0.80,5)(-1.00,5)(-0.90,5)};
+    \addplot[color=blue,mark=diamond*,only marks,mark size=1.4pt] coordinates {(-1.65,4)(-1.50,4)(-1.70,4)(-1.80,4)(-1.60,4)};
+    \addplot[color=purple,mark=triangle*,only marks,mark size=1.8pt] coordinates {(0.60,3)};
+    \addplot[color=green!70!black,mark=pentagon*,only marks,mark size=1.4pt] coordinates {(0.15,2)(0.05,2)(0.25,2)(0.35,2)(0.10,2)};
+    \addplot[color=brown,mark=asterisk,only marks,mark size=1.4pt] coordinates {(0.75,1)(0.80,1)(0.65,1)(0.90,1)};
+    \end{axis}\end{tikzpicture}
+  \end{column}
+  \begin{column}{0.32\textwidth}\centering
+    \begin{tikzpicture}\begin{axis}[asc, strip, title={Polynomial (deg.\ 2)}, xmin=-2.0, xmax=1.8]
+    \addplot[fill=ascSlate100, draw=none] coordinates {(0.52,0.5)(0.83,0.5)(0.83,3.5)(0.52,3.5)} -- cycle;
+    \addplot[color=red,mark=*,only marks,mark size=1.4pt] coordinates {(0.95,6)(1.05,6)(0.90,6)(1.15,6)(1.20,6)};
+    \addplot[color=orange,mark=square*,only marks,mark size=1.4pt] coordinates {(-0.80,5)(-0.70,5)(-0.95,5)(-0.65,5)(-0.85,5)(-0.75,5)};
+    \addplot[color=blue,mark=diamond*,only marks,mark size=1.4pt] coordinates {(-1.45,4)(-1.30,4)(-1.50,4)(-1.60,4)(-1.40,4)};
+    \addplot[color=purple,mark=triangle*,only marks,mark size=1.8pt] coordinates {(0.55,3)};
+    \addplot[color=green!70!black,mark=pentagon*,only marks,mark size=1.4pt] coordinates {(0.12,2)(0.04,2)(0.22,2)(0.28,2)(0.08,2)};
+    \addplot[color=brown,mark=asterisk,only marks,mark size=1.4pt] coordinates {(0.68,1)(0.72,1)(0.60,1)(0.80,1)};
+    \end{axis}\end{tikzpicture}
+  \end{column}
+  \end{columns}
+  \vspace{0.12cm}
+  \begin{columns}[T]
+  \begin{column}{0.32\textwidth}\centering
+    \begin{tikzpicture}\begin{axis}[asc, strip, title={Polynomial (deg.\ 3)}, xmin=-2.1, xmax=2.0]
+    \addplot[fill=ascSlate100, draw=none] coordinates {(0.55,0.5)(0.88,0.5)(0.88,3.5)(0.55,3.5)} -- cycle;
+    \addplot[color=red,mark=*,only marks,mark size=1.4pt] coordinates {(1.05,6)(1.15,6)(1.00,6)(1.30,6)(1.40,6)};
+    \addplot[color=orange,mark=square*,only marks,mark size=1.4pt] coordinates {(-0.88,5)(-0.77,5)(-1.00,5)(-0.72,5)(-0.92,5)(-0.82,5)};
+    \addplot[color=blue,mark=diamond*,only marks,mark size=1.4pt] coordinates {(-1.55,4)(-1.40,4)(-1.60,4)(-1.70,4)(-1.50,4)};
+    \addplot[color=purple,mark=triangle*,only marks,mark size=1.8pt] coordinates {(0.58,3)};
+    \addplot[color=green!70!black,mark=pentagon*,only marks,mark size=1.4pt] coordinates {(0.10,2)(0.02,2)(0.20,2)(0.28,2)(0.06,2)};
+    \addplot[color=brown,mark=asterisk,only marks,mark size=1.4pt] coordinates {(0.70,1)(0.76,1)(0.62,1)(0.85,1)};
+    \end{axis}\end{tikzpicture}
+  \end{column}
+  \begin{column}{0.32\textwidth}\centering
+    \begin{tikzpicture}\begin{axis}[asc, strip, title={Fisher}, xmin=-2.0, xmax=1.8]
+    \addplot[fill=ascSlate100, draw=none] coordinates {(0.47,0.5)(0.78,0.5)(0.78,3.5)(0.47,3.5)} -- cycle;
+    \addplot[color=red,mark=*,only marks,mark size=1.4pt] coordinates {(0.90,6)(1.00,6)(0.85,6)(1.15,6)(1.20,6)};
+    \addplot[color=orange,mark=square*,only marks,mark size=1.4pt] coordinates {(-0.70,5)(-0.60,5)(-0.85,5)(-0.55,5)(-0.75,5)(-0.65,5)};
+    \addplot[color=blue,mark=diamond*,only marks,mark size=1.4pt] coordinates {(-1.35,4)(-1.20,4)(-1.40,4)(-1.50,4)(-1.30,4)};
+    \addplot[color=purple,mark=triangle*,only marks,mark size=1.8pt] coordinates {(0.50,3)};
+    \addplot[color=green!70!black,mark=pentagon*,only marks,mark size=1.4pt] coordinates {(0.12,2)(0.05,2)(0.22,2)(0.28,2)(0.08,2)};
+    \addplot[color=brown,mark=asterisk,only marks,mark size=1.4pt] coordinates {(0.62,1)(0.68,1)(0.55,1)(0.75,1)};
+    \end{axis}\end{tikzpicture}
+  \end{column}
+  \begin{column}{0.32\textwidth}\centering
+    \begin{tikzpicture}\begin{axis}[asc, strip, title={Graph diffusion}, xmin=-1.5, xmax=1.3]
+    \addplot[fill=ascSlate100, draw=none] coordinates {(0.32,0.5)(0.58,0.5)(0.58,3.5)(0.32,3.5)} -- cycle;
+    \addplot[color=red,mark=*,only marks,mark size=1.4pt] coordinates {(0.75,6)(0.82,6)(0.70,6)(0.90,6)(0.95,6)};
+    \addplot[color=orange,mark=square*,only marks,mark size=1.4pt] coordinates {(-0.52,5)(-0.42,5)(-0.65,5)(-0.38,5)(-0.58,5)(-0.48,5)};
+    \addplot[color=blue,mark=diamond*,only marks,mark size=1.4pt] coordinates {(-0.98,4)(-0.85,4)(-1.02,4)(-1.10,4)(-0.92,4)};
+    \addplot[color=purple,mark=triangle*,only marks,mark size=1.8pt] coordinates {(0.40,3)};
+    \addplot[color=green!70!black,mark=pentagon*,only marks,mark size=1.4pt] coordinates {(0.10,2)(0.05,2)(0.18,2)(0.22,2)(0.08,2)};
+    \addplot[color=brown,mark=asterisk,only marks,mark size=1.4pt] coordinates {(0.42,1)(0.48,1)(0.35,1)(0.55,1)};
+    \end{axis}\end{tikzpicture}
+  \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  {\scriptsize\muted{Shaded band: the overlap where \kmeans{} on \kpca{}1
+  alone cannot separate the pair. Linear kernel: COVID
+  {\color{purple}$C_3$} sits inside the {\color{red}$C_0$} band. All five
+  nonlinear kernels move $C_3$ to the same {\color{brown}$C_5$} overlap.}}
+\end{frame}
+
+
+
+\begin{frame}{Reading the Agreement}
+  \textbf{The same shift, three different mechanisms:}
+  \vspace{0.2cm}
+  \begin{itemize}
+    \item \textbf{RBF / polynomial} --- curvature fitting in feature space.
+    \item \textbf{Fisher} --- eigenvalue-inverse weighting: \pc{4} amplified
+      $12.8\times$, enlarging COVID's yield-collapse signal.
+    \item \textbf{Graph diffusion} --- pure 5-NN connectivity: similarity mass
+      routed to $C_5$, the actual graph neighbors, overriding the global
+      \pc{1} alignment with $C_0$.
+  \end{itemize}
+  \vspace{0.35cm}
+  \begin{exampleblock}{The certificate}
+    Six kernels from three fundamentally different families agree with each
+    other --- and with linear PCA (\ari{} = 1.0 in 2D; \kpca{}2 resolves the
+    $C_3$--$C_5$ ambiguity exactly as \pc{2} does). \textbf{The manifold
+    contains no detectable curvature.} The absence of nonlinear structure is
+    itself the finding.
+  \end{exampleblock}
+\end{frame}
+
+
+\begin{frame}{The Supervised Complement: Kernel Ridge Regression}
+  Structure said linear. Does nonlinear \emph{prediction} disagree?
+  Predict operating profit from the six other raw variables, LOOCV,
+  nested grid search for $\gamma, \alpha$.
+  \vspace{0.3cm}
+  \begin{center}
+  \small
+  \begin{tabular}{@{}l r r@{}}
+  \toprule
+  \textbf{Model} & \textbf{$R^2$ (all years)} & \textbf{$R^2$ (excl.\ 2020)} \\
+  \midrule
+  Linear ridge                  & \textbf{0.881} & 0.831 \\
+  Kernel ridge (RBF)            & 0.592 & \textbf{0.836} \\
+  Kernel ridge (poly., deg.~2)  & 0.380 & 0.785 \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item \textbf{2020 excluded:} all three models comparable
+      ($R^2 = 0.79$--$0.84$) --- kernel flexibility buys
+      \teal{no predictive advantage}. In-distribution, the manifold is
+      linear.
+    \item \textbf{2020 included:} kernels collapse, linear ridge does not.
+      2020's 65\% RPM/load-factor collapse sits far outside the training
+      manifold; similarity-based prediction reverts to the mean.
+    \item \muted{That collapse is kernel \emph{extrapolation} failing at a
+      genuine outlier --- not evidence of hidden curvature.}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{The Verdict on the Audit}
+  \begin{itemize}
+    \item[{\color{ascTeal600}\checkmark}] \textbf{The headline claim survives.}
+      Cluster assignments are invariant across spaces (\ari{} = 1.0);
+      the geometry behind Renold et al.'s regime labels is sound ---
+      collinearity's growth axis \emph{aligns} with the temporal partition
+      instead of cutting across it.
+    \item[{\color{ascTeal600}\checkmark}] \textbf{The manifold is certifiably
+      linear.} Six kernels, three families, one verdict --- reinforced by
+      kernel ridge showing no nonlinear accuracy gain in-distribution.
+    \item[{\color{ascSlate400}$\circ$}] \textbf{But the taxonomy is
+      over-resolved.} The data structurally supports \teal{three} regimes;
+      $k=6$ is imposed, defensible for year-by-year policy description, not
+      recommended by the indices.
+    \item[{\color{ascSlate400}$\circ$}] \textbf{Practical recommendation:}
+      in collinearity-prone panel data, cluster on \pc{} scores, not raw
+      variables --- the raw space \emph{suppresses} the model-selection
+      signal.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{The linearity Certificate, as a Checklist}
+  For any small, collinearity-prone panel you intend to cluster:
+  \begin{enumerate}
+    \item \textbf{Measure effective dimensionality} --- participation ratio of
+      the eigenvalue spectrum. Low \pr{} $\Rightarrow$ expect a near-linear
+      manifold and a distorted raw space.
+    \item \textbf{Cluster on \pc{} scores}, and compare against raw-space
+      assignments (\ari{}). Explain any invariance geometrically.
+    \item \textbf{Scan $k$ in the clean space} --- internal indices in raw
+      space can be suppressed by the collinear axis.
+    \item \textbf{Attack with kernel families that fail differently} ---
+      distance-based, information-geometric, graph-based; median-heuristic
+      bandwidths, nothing tuned. Cross-family agreement is the certificate.
+    \item \textbf{Cross-check with supervised kernels} --- kernel vs.\ linear
+      ridge under LOOCV; audit outliers for extrapolation effects before
+      blaming curvature.
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Future Work}
+  \begin{itemize}
+    \item \textbf{Temporal dynamics.} Hidden Markov models or regime-switching
+      VAR: quantify state persistence and transitions instead of static bands.
+    \item \textbf{Modern representation-learning baselines.} $t$-SNE, UMAP,
+      autoencoders, spectral and contrastive methods: does the certified
+      linear structure persist under representations that don't assume it?
+    \item \textbf{Other transport sectors.} Public transport panels share the
+      same secular-growth collinearity --- is the
+      collinearity--silhouette-suppression pattern domain-general?
+      \muted{(Railways have profit cycles too.)}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[plain]
+  \vspace*{1.1cm}
+  \bigstatement{Understand your data before you model it ---\\
+    and when you claim it is linear, \textcolor{ascTeal600}{certify it}.}
+  \vspace{0.7cm}
+
+  \muted{Kernel PCA, 28 years on, working as the audit tool for its own
+  linear ancestor.}
+  \vspace{0.8cm}
+
+  {\small
+  \textbf{Thanks} --- Prof.\ Renold, for discussions and for making data and
+  methodology public.\\
+  Prof.\ Bunke, for mentorship and teaching at the FKI research group, here
+  in Bern.\par}
+  \vspace{0.6cm}
+\end{frame}
+
+%% ============================================================
+%% Backup slides
+%% ============================================================
+\appendix
+
+\begin{frame}{Backup: full cluster-quality table}
+  \begin{center}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}c rr rr rr@{}}
+  \toprule
+   & \multicolumn{2}{c}{\textbf{7D-raw}} &
+     \multicolumn{2}{c}{\textbf{3D-\pc{}}} &
+     \multicolumn{2}{c}{\textbf{4D-\pc{}}} \\
+  \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+  $k$ & \sil{} & \db{} & \sil{} & \db{} & \sil{} & \db{} \\
+  \midrule
+  2 & 0.431 & 0.906 & 0.506 & 0.742 & 0.458 & 0.853 \\
+  \textbf{3} & 0.443 & 0.648 & \textbf{0.523} & \textbf{0.507} & 0.472 & 0.601 \\
+  4 & 0.429 & 0.658 & 0.481 & 0.603 & 0.466 & 0.615 \\
+  5 & 0.413 & 0.679 & 0.421 & 0.603 & 0.460 & 0.569 \\
+  6 & 0.448 & 0.647 & 0.448 & 0.584 & \textbf{0.490} & \textbf{0.557} \\
+  \textbf{7} & \textbf{0.449} & \textbf{0.629} & 0.429 & 0.583 & 0.463 & 0.640 \\
+  8 & 0.439 & 0.613 & 0.416 & 0.596 & 0.449 & 0.627 \\
+  9 & 0.416 & 0.538 & 0.430 & 0.554 & 0.410 & 0.578 \\
+  \midrule
+  Optimal $k$ & \multicolumn{2}{c}{$k=7$} & \multicolumn{2}{c}{$k=3$} &
+    \multicolumn{2}{c}{$k=6$} \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Backup: loadings on \pc{1}--\pc{4}}
+  \begin{center}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}l *{7}{r}@{}}
+  \toprule
+   & \multicolumn{7}{c}{\textbf{Variable}} \\
+  \cmidrule(l){2-8}
+  \textbf{\pc{}} & Op.~Profit & Fuel & Wages & RPM & LF & Yield & Other Exp. \\
+  \midrule
+  1 (59.8\%) & $+0.33$ & $+0.39$ & $+0.28$ & $\mathbf{+0.45}$ &
+    $\mathbf{+0.45}$ & $+0.34$ & $-0.38$ \\
+  2 (16.7\%) & $\mathbf{+0.63}$ & $-0.30$ & $\mathbf{-0.51}$ & $+0.23$ &
+    $+0.27$ & $-0.22$ & $+0.27$ \\
+  3 (11.3\%) & $+0.24$ & $\mathbf{-0.45}$ & $+0.55$ & $+0.08$ &
+    $-0.17$ & $\mathbf{+0.45}$ & $+0.46$ \\
+  4 (7.8\%)  & $+0.16$ & $+0.17$ & $-0.50$ & $-0.37$ & $-0.18$ &
+    $\mathbf{+0.73}$ & $-0.04$ \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item \pc{1} uniformly positive (except other expenses): the fingerprint
+      of collinearity --- one shared growth factor.
+    \item \pc{4}: yield per passenger $+0.73$, the COVID signature.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: the $k=3$ vs.\ $k=6$ tension across spaces}
+  \begin{itemize}
+    \setlength{\itemsep}{0.35cm}
+    \item In 3D-\pc{}: both indices pick $k=3$. In 4D-\pc{}: both pick $k=6$.
+      Not a contradiction --- \pc{4} is essentially a
+      \teal{single-year outlier direction} (2020).
+    \item Adding \pc{4} manufactures a well-separated singleton cluster
+      $C_3 = \{2020\}$, which internal indices reward --- inflating $k=6$
+      quality in exactly the space that isolates the outlier.
+    \item Reading: three \emph{structural} regimes + one \emph{singularity};
+      the six-cluster taxonomy subdivides the three regimes descriptively.
+    \item Suggestive, not confirmed: $n=26$, two internal indices, no external
+      ground truth, no significance test.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: data and implementation notes}
+  \begin{itemize}
+    \setlength{\itemsep}{0.35cm}
+    \item Data digitized from Renold et al.'s published tables; 2008 is absent
+      from the original data table, hence $n=25$ complete years for the
+      regression experiments.
+    \item All variables standardized before distance computations.
+    \item \kmeans{}: scikit-learn, \texttt{n\_init=100},
+      \texttt{max\_iter=1000}.
+    \item Kernel ridge: predictors and target standardized \emph{within each
+      training fold}; $\gamma$ and $\alpha$ by nested LOOCV grid search ---
+      no test-fold leakage.
+    \item Code available on request.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: why not Fisher discriminant analysis?}
+  \begin{itemize}
+    \setlength{\itemsep}{0.35cm}
+    \item FDA needs pre-labelled membership; the research question is
+      structure \emph{discovery} --- using the labels we are trying to
+      validate would be circular.
+    \item With $n \approx 5$--$9$ per cluster, within-class covariance is
+      near-singular; the computation destabilizes.
+    \item Post-hoc, FDA/LDA and supervised \kpca{} are attractive: check
+      whether supervised projections align with the unsupervised ones found
+      here.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: kernel definitions and bandwidths}
+  \begin{itemize}
+    \setlength{\itemsep}{0.30cm}
+    \item \textbf{RBF:} $K(x,y)=\exp(-\gamma\|x-y\|^2)$,
+      $\gamma$ from the median pairwise distance in 4D-\pc{} space.
+    \item \textbf{Polynomial:} $K(x,y)=(x^{\top}y + c)^d$, $d \in \{2,3\}$.
+    \item \textbf{Fisher--Mahalanobis:} $K_F(x,y)=x^{\top}\hat\Sigma^{-1}y$,
+      $\hat\Sigma=\mathrm{diag}(\lambda_1,\dots,\lambda_4)$ (diagonal by PCA
+      orthogonality) $\equiv$ PCA on whitened scores
+      $z_k = x_k/\sqrt{\lambda_k}$; derived from a single-Gaussian generative
+      model.
+    \item \textbf{Graph diffusion:} $K=\exp(-\beta L)$ on the 5-NN graph of
+      4D-\pc{} scores, $\beta$ from the median edge weight.
+    \item \kpca{} operates on the $26\times26$ Gram matrix; cluster
+      assignments held fixed from the 4D-\pc{} \kmeans{} solution.
+  \end{itemize}
+\end{frame}
+
+\end{document}

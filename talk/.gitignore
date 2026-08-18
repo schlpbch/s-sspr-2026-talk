@@ -1,0 +1,9 @@
+# LaTeX/beamer build artifacts
+*.aux
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.toc
+*.synctex.gz

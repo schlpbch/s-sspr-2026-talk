@@ -1,0 +1,108 @@
+%% ============================================================
+%%  asc-theme.sty — minimal Beamer theme after https://asc.engineering/
+%%  Light, flat, IBM Plex Sans, slate text, teal accent.
+%%  Compile with lualatex (fontspec).
+%% ============================================================
+\ProvidesPackage{asc-theme}
+
+\RequirePackage{fontspec}
+\RequirePackage{tikz}
+
+%% ── Fonts: IBM Plex Sans (site weights 400/500/600/700) ─────
+\setsansfont{IBMPlexSans}[
+  Path            = fonts/,
+  Extension       = .ttf,
+  UprightFont     = *-Regular,
+  BoldFont        = *-SemiBold,
+  ItalicFont      = *-Italic,
+  BoldItalicFont  = *-SemiBoldItalic,
+]
+\newfontfamily\plexmedium{IBMPlexSans}[
+  Path=fonts/, Extension=.ttf, Ligatures=TeX,
+  UprightFont=*-Medium, ItalicFont=*-MediumItalic,
+]
+\newfontfamily\plexheavy{IBMPlexSans}[
+  Path=fonts/, Extension=.ttf, Ligatures=TeX,
+  UprightFont=*-Bold, ItalicFont=*-BoldItalic,
+]
+\usefonttheme{professionalfonts}
+
+%% ── Palette (asc.engineering Tailwind tokens) ───────────────
+\definecolor{ascSlate900}{HTML}{0F172A} % primary text
+\definecolor{ascSlate600}{HTML}{475569} % secondary text
+\definecolor{ascSlate400}{HTML}{94A3B8} % muted
+\definecolor{ascSlate100}{HTML}{F1F5F9} % subtle fill
+\definecolor{ascTeal700}{HTML}{0F766E}  % accent dark
+\definecolor{ascTeal600}{HTML}{0D9488}  % accent
+\definecolor{ascTeal500}{HTML}{14B8A6}  % accent bright
+\definecolor{ascTeal50}{HTML}{F0FDFC}   % accent tint
+
+%% ── Base colors ─────────────────────────────────────────────
+\setbeamercolor{normal text}{fg=ascSlate900,bg=white}
+\setbeamercolor{structure}{fg=ascTeal600}
+\setbeamercolor{alerted text}{fg=ascTeal600}
+\setbeamercolor{example text}{fg=ascTeal700}
+\setbeamercolor{frametitle}{fg=ascSlate900,bg=white}
+\setbeamercolor{title}{fg=ascSlate900}
+\setbeamercolor{subtitle}{fg=ascSlate600}
+\setbeamercolor{author}{fg=ascSlate600}
+\setbeamercolor{institute}{fg=ascSlate400}
+\setbeamercolor{footline}{fg=ascSlate400}
+\setbeamercolor{section in toc}{fg=ascSlate900}
+\setbeamercolor{caption name}{fg=ascSlate600}
+
+%% Blocks: flat, subtle fills, no shadows
+\setbeamercolor{block title}{fg=ascTeal700,bg=ascSlate100}
+\setbeamercolor{block body}{fg=ascSlate900,bg=ascSlate100}
+\setbeamercolor{block title example}{fg=ascTeal700,bg=ascTeal50}
+\setbeamercolor{block body example}{fg=ascSlate900,bg=ascTeal50}
+\setbeamertemplate{blocks}[default]
+
+%% ── Fonts sizes/weights ─────────────────────────────────────
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize,series=\mdseries}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\footnotesize}
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamerfont{block title}{series=\bfseries,size=\normalsize}
+\setbeamerfont{caption}{size=\scriptsize}
+
+%% ── Flat look: no chrome ────────────────────────────────────
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+%% Frame title: semibold + short teal bar beneath (site style)
+\setbeamertemplate{frametitle}{%
+  \vspace*{0.45cm}%
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par}%
+  \vspace*{0.10cm}%
+  {\color{ascTeal500}\rule{28pt}{2.2pt}}\par%
+  \vspace*{0.05cm}%
+}
+
+%% Footline: muted short title left, page number right
+\setbeamertemplate{footline}{%
+  \hbox to \paperwidth{%
+    \hspace*{0.6cm}%
+    {\usebeamerfont{footline}\usebeamercolor[fg]{footline}\insertshorttitle}%
+    \hfill
+    {\usebeamerfont{footline}\usebeamercolor[fg]{footline}\insertframenumber}%
+    \hspace*{0.6cm}}%
+  \vskip 0.30cm%
+}
+
+%% Itemize: small teal squares, slate sub-items
+\setbeamertemplate{itemize item}{\color{ascTeal500}\raisebox{0.14em}{\rule{0.30em}{0.30em}}}
+\setbeamertemplate{itemize subitem}{\color{ascSlate400}\raisebox{0.14em}{\rule{0.26em}{0.26em}}}
+\setbeamertemplate{enumerate item}{\color{ascTeal600}\bfseries\insertenumlabel.}
+\setbeamercolor{itemize/enumerate body}{fg=ascSlate900}
+\setbeamercolor{itemize/enumerate subbody}{fg=ascSlate600}
+
+%% ── Helpers ─────────────────────────────────────────────────
+%% Muted secondary line
+\newcommand{\muted}[1]{{\color{ascSlate600}#1}}
+%% Teal emphasis
+\newcommand{\teal}[1]{{\color{ascTeal600}\bfseries #1}}
+%% Big statement typography (hook slides)
+\newcommand{\bigstatement}[1]{{\plexheavy\LARGE\color{ascSlate900}#1\par}}
