@@ -42,5 +42,3 @@ make clean    # removes auxiliary files
 
 Andreas Schlapbach — [asc.engineering](https://asc.engineering)
 
-*The views expressed are the author's own and do not necessarily reflect the
-views or policies of SBB.*
