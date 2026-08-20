@@ -40,5 +40,5 @@ make clean    # removes auxiliary files
 
 ## Author
 
-Andreas Schlapbach — [asc.engineering](https://asc.engineering)
+Andreas Schlapbach — [asc.engineering](https://asc.engineering) — schlpbch@asc.engineering
 
