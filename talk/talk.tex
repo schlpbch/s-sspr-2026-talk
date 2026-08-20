@@ -46,7 +46,7 @@
 
 \title[Orthogonality \& Dimensionality in Airline Cluster Analysis]%
   {Orthogonality and Dimensionality in Airline Cluster Analysis using PCA and Kernel PCA}
-\author{Andreas Schlapbach}
+\author{Andreas Schlapbach(schlpbch@asc.engineering)}
 \date{S+SSPR 2026 --- Bern, August 24--26}
 
 \begin{document}
@@ -61,9 +61,9 @@
   \vspace{0.18cm}
   {\color{ascTeal500}\rule{28pt}{2.4pt}\par}
   \vspace{0.30cm}
-  {\large\muted{The linearity certificate: how to show a dataset needs no kernel}\par}
+  {\large\muted{The linearity certificate: How to show a dataset needs no kernel.}\par}
   \vspace{0.85cm}
-  {\usebeamerfont{author}\usebeamercolor[fg]{author}Andreas Schlapbach\par}
+	{\usebeamerfont{author}\usebeamercolor[fg]{author}Andreas Schlapbach (schlpbch@asc.engineering)\par}
   \vspace{0.10cm}
   {\usebeamerfont{institute}\usebeamercolor[fg]{institute}%
     Swiss Federal Railways (SBB), Switzerland\footnotemark[1]\quad\textbullet\quad
@@ -80,19 +80,19 @@
   \begin{itemize}
      \item{The kernel methods turn 28 age this year:  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as a kernel eigenvalue problem}, Neural Computation, 1998.}}
 
-    \item {But {\color{ascTeal600}How do you certify that a dataset contains none?}}
+    \item{But {\color{ascTeal600}How do you certify that a dataset contains none?}}
 
-    \item {A certified \emph{no} is a result: it licenses every linear tool
+    \item{A certified \emph{no} is a result: it licenses every linear tool
 	    downstream --- PCA, $k$-means in score space, linear ridge.}
-    \item {Papers rarely issue that certificate explicitly. This talk shows
+    \item{Papers rarely issue that certificate explicitly. This talk shows
 	    how, on a published study.}
   \end{itemize}
 \end{frame}
 
 
-\begin{frame}{The Case Under Audit}
+\begin{frame}{The Paper Under Audit}
    \begin{itemize}
-      \item \emph{Renold et al.: "Methodological Framework for a Deeper Understanding of Airline Proift Cycles in the Context of Disruptive Exogenous Impact", Journal of Air Transport Management, 2023}
+      \item \emph{Renold et al.: "Methodological Framework for a Deeper Understanding of Airline Profit Cycles in the Context of Disruptive Exogenous Impact", Journal of Air Transport Management, 2023}
       \item Studies US airline profit cycles between 1995 and 2020
       \item Data set consists of seven variables: operating profit, fuel, wages, RPM,
           load factor, yield, other expenses
@@ -113,8 +113,7 @@
           no quality criterion, no alternative $k$ compared.
     \end{enumerate}
     \vspace{0.15cm}
-     \muted{If either is material, the regime labels --- and the headline
-      claim --- cannot be taken at face value.}
+     \muted{If either is material, the regime labels claim cannot be taken at face value.}
 \end{frame}
 
 
@@ -148,11 +147,11 @@
   \textbf{\pc{}} & \textbf{Interpretation} &
   \textbf{Variance (\%)} & \textbf{Cumulative (\%)} \\
   \midrule
-  1 & Secular US aviation growth     & 59.8 & 59.8 \\
-  2 & Profit/wage boom--bust tension & 16.7 & 76.5 \\
-  3 & Fuel-price shocks              & 11.3 & 87.8 \\
+  1 & Secular US aviation growth      & 59.8 & 59.8 \\
+  2 & Profit/wage boom--bust tension  & 16.7 & 76.5 \\
+  3 & Fuel-price shocks               & 11.3 & 87.8 \\
   4 & \teal{COVID-era yield collapse} &  7.8 & 95.6 \\
-  5--7 & Noise                       &  4.4 & 100.0 \\
+  5--7 & Noise                        &  4.4 & 100.0 \\
   \bottomrule
   \end{tabular}
   \end{center}
@@ -264,8 +263,6 @@
         \item COVID 2020 is a \teal{geometric singularity}, displaced by the
           yield collapse (load factor $85\% \to 59\%$).
       \end{itemize}
-      \vspace{0.2cm}
-      \muted{\small This is the linear story. Now we stress-test it.}
     \end{column}
   \end{columns}
 \end{frame}
@@ -329,8 +326,7 @@
 
 \begin{frame}{Enter the Kernels: the Certificate's Core Idea}
   \textbf{If the manifold hides curvature, \emph{some} kernel family should
-  exploit it.} So we attack with all of them --- on the 4D-\pc{} scores,
-  assignments held fixed.
+  exploit it.} 
   \vspace{0.35cm}
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
@@ -359,10 +355,8 @@
   \vspace{0.25cm}
   \begin{itemize}
     \item Plus the \textbf{linear kernel} as baseline ($\equiv$ standard PCA).
-    \item All bandwidths by \teal{median heuristics} --- nothing fitted,
-      nothing tuned toward a verdict.
-    \item Three families fail for three \emph{different} reasons --- their
-      agreement is evidence.
+    \item All bandwidths by \teal{median heuristics}
+    \item Three families fail for three \emph{different} reasons. Their agreement is evidence.
   \end{itemize}
 \end{frame}
 
@@ -523,10 +517,10 @@
   \textbf{The same shift, three different mechanisms:}
   \vspace{0.2cm}
   \begin{itemize}
-    \item \textbf{RBF / polynomial} --- curvature fitting in feature space.
-    \item \textbf{Fisher} --- eigenvalue-inverse weighting: \pc{4} amplified
+    \item \textbf{RBF / polynomial:} curvature fitting in feature space.
+    \item \textbf{Fisher:} eigenvalue-inverse weighting: \pc{4} amplified
       $12.8\times$, enlarging COVID's yield-collapse signal.
-    \item \textbf{Graph diffusion} --- pure 5-NN connectivity: similarity mass
+    \item \textbf{Graph diffusion:} pure 5-NN connectivity: similarity mass
       routed to $C_5$, the actual graph neighbors, overriding the global
       \pc{1} alignment with $C_0$.
   \end{itemize}
@@ -573,8 +567,7 @@
 \end{frame}
 
 
-
-\begin{frame}{The Verdict on the Audit}
+\begin{frame}{The Verdict on the Paper}
   \begin{itemize}
     \item[{\color{ascTeal600}\checkmark}] \textbf{The headline claim survives.}
       Cluster assignments are invariant across spaces (\ari{} = 1.0);
@@ -596,20 +589,20 @@
 \end{frame}
 
 
-\begin{frame}{The linearity Certificate, as a Check List}
+\begin{frame}{The Linearity Certificate, as a Check List}
   For any small, collinearity-prone panel you intend to cluster:
   \begin{enumerate}
-    \item \textbf{Measure Effective Dimensionality} --- participation ratio of
+    \item \textbf{Measure Effective Dimensionality:} participation ratio of
       the eigenvalue spectrum. Low \pr{} $\Rightarrow$ expect a near-linear
       manifold and a distorted raw space.
     \item \textbf{Cluster on \pc{} scores}, and compare against raw-space
       assignments (\ari{}). Explain any invariance geometrically.
-    \item \textbf{Scan $k$ in the Clean Space} --- internal indices in raw
+    \item \textbf{Scan $k$ in the Clean Space:} internal indices in raw
       space can be suppressed by the collinear axis.
-    \item \textbf{Attack with Kernel Families that Fail Differently} ---
+    \item \textbf{Attack with Kernel Families that Fail Differently:}
       distance-based, information-geometric, graph-based; median-heuristic
       bandwidths, nothing tuned. Cross-family agreement is the certificate.
-    \item \textbf{Cross-check with Supervised Kernels} --- kernel vs.\ linear
+    \item \textbf{Cross-check with Supervised Kernels:} kernel vs.\ linear
       ridge under LOOCV; audit outliers for extrapolation effects before
       blaming curvature.
   \end{enumerate}
@@ -626,7 +619,7 @@
     \item \textbf{Other transport sectors.} Public transport panels share the
       same secular-growth collinearity --- is the
       collinearity--silhouette-suppression pattern domain-general?
-      \muted{(Railways have profit cycles too.)}
+    \item Hint: Railways have profit cycles too.
   \end{itemize}
 \end{frame}
 
@@ -637,16 +630,8 @@
     and when you claim it is linear, \textcolor{ascTeal600}{certify it}.}
   \vspace{0.7cm}
 
-  \muted{Kernel PCA, 28 years on, working as the audit tool for its own
-  linear ancestor.}
-  \vspace{0.8cm}
+  \muted{Kernel PCA, 28 years on, works as the audit tool for its own linear ancestor.}
 
-  %{\small
-  %\textbf{Thanks} --- Prof.\ Renold, for discussions and for making data and
-  %methodology public.\\
-  %Prof.\ Bunke, for mentorship and teaching at the FKI research group, here
-  %in Bern.\par}
-  %\vspace{0.6cm}
 \end{frame}
 
 %% ============================================================
