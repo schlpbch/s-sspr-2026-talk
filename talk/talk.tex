@@ -607,20 +607,20 @@
 \end{frame}
 
 
-\begin{frame}{The linearity Certificate, as a Checklist}
+\begin{frame}{The linearity Certificate, as a Check List}
   For any small, collinearity-prone panel you intend to cluster:
   \begin{enumerate}
-    \item \textbf{Measure effective dimensionality} --- participation ratio of
+    \item \textbf{Measure Effective Dimensionality} --- participation ratio of
       the eigenvalue spectrum. Low \pr{} $\Rightarrow$ expect a near-linear
       manifold and a distorted raw space.
     \item \textbf{Cluster on \pc{} scores}, and compare against raw-space
       assignments (\ari{}). Explain any invariance geometrically.
-    \item \textbf{Scan $k$ in the clean space} --- internal indices in raw
+    \item \textbf{Scan $k$ in the Clean Space} --- internal indices in raw
       space can be suppressed by the collinear axis.
-    \item \textbf{Attack with kernel families that fail differently} ---
+    \item \textbf{Attack with Kernel Families that Fail Differently} ---
       distance-based, information-geometric, graph-based; median-heuristic
       bandwidths, nothing tuned. Cross-family agreement is the certificate.
-    \item \textbf{Cross-check with supervised kernels} --- kernel vs.\ linear
+    \item \textbf{Cross-check with Supervised Kernels} --- kernel vs.\ linear
       ridge under LOOCV; audit outliers for extrapolation effects before
       blaming curvature.
   \end{enumerate}
@@ -629,7 +629,7 @@
 
 \begin{frame}{Future Work}
   \begin{itemize}
-    \item \textbf{Temporal dynamics.} Hidden Markov models or regime-switching
+    \item \textbf{Temporal Dynamics.} Hidden Markov models or regime-switching
       VAR: quantify state persistence and transitions instead of static bands.
     \item \textbf{Modern representation-learning baselines.} $t$-SNE, UMAP,
       autoencoders, spectral and contrastive methods: does the certified
@@ -652,12 +652,12 @@
   linear ancestor.}
   \vspace{0.8cm}
 
-  {\small
-  \textbf{Thanks} --- Prof.\ Renold, for discussions and for making data and
-  methodology public.\\
-  Prof.\ Bunke, for mentorship and teaching at the FKI research group, here
-  in Bern.\par}
-  \vspace{0.6cm}
+  %{\small
+  %\textbf{Thanks} --- Prof.\ Renold, for discussions and for making data and
+  %methodology public.\\
+  %Prof.\ Bunke, for mentorship and teaching at the FKI research group, here
+  %in Bern.\par}
+  %\vspace{0.6cm}
 \end{frame}
 
 %% ============================================================
@@ -665,10 +665,9 @@
 %% ============================================================
 \appendix
 
-\begin{frame}{Backup: full cluster-quality table}
+\begin{frame}{Backup: Full Cluster-Quality Table}
   \begin{center}
-  \small
-  \setlength{\tabcolsep}{5pt}
+  \setlength{\tabcolsep}{9pt}
   \begin{tabular}{@{}c rr rr rr@{}}
   \toprule
    & \multicolumn{2}{c}{\textbf{7D-raw}} &
@@ -690,13 +689,12 @@
     \multicolumn{2}{c}{$k=6$} \\
   \bottomrule
   \end{tabular}
-  \end{center}
+  \end{center} 
 \end{frame}
 
-\begin{frame}{Backup: loadings on \pc{1}--\pc{4}}
+\begin{frame}{Backup: Loadings on \pc{1}--\pc{4}}
   \begin{center}
-  \small
-  \setlength{\tabcolsep}{5pt}
+  \setlength{\tabcolsep}{7pt}
   \begin{tabular}{@{}l *{7}{r}@{}}
   \toprule
    & \multicolumn{7}{c}{\textbf{Variable}} \\
@@ -722,7 +720,9 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Backup: the $k=3$ vs.\ $k=6$ tension across spaces}
+
+
+\begin{frame}{Backup: the $k=3$ vs.\ $k=6$ Tension Across Spaces}
   \begin{itemize}
     \setlength{\itemsep}{0.35cm}
     \item In 3D-\pc{}: both indices pick $k=3$. In 4D-\pc{}: both pick $k=6$.
@@ -738,9 +738,10 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Backup: data and implementation notes}
+
+
+\begin{frame}{Backup: Data and Implementation Notes}
   \begin{itemize}
-    \setlength{\itemsep}{0.35cm}
     \item Data digitized from Renold et al.'s published tables; 2008 is absent
       from the original data table, hence $n=25$ complete years for the
       regression experiments.
@@ -754,9 +755,10 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Backup: why not Fisher discriminant analysis?}
+
+
+\begin{frame}{Backup: why not Fisher Discriminant Analysis?}
   \begin{itemize}
-    \setlength{\itemsep}{0.35cm}
     \item FDA needs pre-labelled membership; the research question is
       structure \emph{discovery} --- using the labels we are trying to
       validate would be circular.
@@ -768,9 +770,10 @@
   \end{itemize}
 \end{frame}
 
+
+
 \begin{frame}{Backup: kernel definitions and bandwidths}
   \begin{itemize}
-    \setlength{\itemsep}{0.30cm}
     \item \textbf{RBF:} $K(x,y)=\exp(-\gamma\|x-y\|^2)$,
       $\gamma$ from the median pairwise distance in 4D-\pc{} space.
     \item \textbf{Polynomial:} $K(x,y)=(x^{\top}y + c)^d$, $d \in \{2,3\}$.
