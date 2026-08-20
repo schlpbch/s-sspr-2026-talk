@@ -67,8 +67,8 @@
   \vspace{0.10cm}
   {\usebeamerfont{institute}\usebeamercolor[fg]{institute}%
     Swiss Federal Railways (SBB), Switzerland\footnotemark[1]\quad\textbullet\quad
-    {\color{ascTeal600}asc.engineering}\quad\textbullet\quad
-    arXiv:2606.08322\par}
+    {\color{ascTeal600}asc.engineering}
+    }
   \vspace{0.55cm}
   \footnotetext[1]{\tiny\color{ascSlate400}The views expressed are the author's
     own and do not necessarily reflect the views or policies of SBB.}
@@ -77,61 +77,50 @@
 
 
 \begin{frame}{Kernel PCA turns 28}
-  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as
-  a kernel eigenvalue problem}, Neural Computation, 1998.}
-  \vspace{0.35cm}
-
-  \bigstatement{For 28 years, the question has been:\\
-    \emph{which} kernel reveals the nonlinearity?}
-  \vspace{0.3cm}
-  \bigstatement{\color{ascTeal600}How do you certify that a dataset contains none?}
-  \vspace{0.35cm}
-
   \begin{itemize}
-    \item A certified \emph{no} is a result: it licenses every linear tool
-      downstream --- PCA, $k$-means in score space, linear ridge.
-    \item Papers rarely issue that certificate explicitly. This talk shows
-      how, on a published study.
+     \item{The kernel methods turn 28 age this year:  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as a kernel eigenvalue problem}, Neural Computation, 1998.}}
+
+    \item {But {\color{ascTeal600}How do you certify that a dataset contains none?}}
+
+    \item {A certified \emph{no} is a result: it licenses every linear tool
+	    downstream --- PCA, $k$-means in score space, linear ridge.}
+    \item {Papers rarely issue that certificate explicitly. This talk shows
+	    how, on a published study.}
   \end{itemize}
 \end{frame}
 
 
 \begin{frame}{The Case Under Audit}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \textbf{Renold et al., J.\ Air Transport Management, 2023}
-      \vspace{0.15cm}
-      \begin{itemize}
-        \item US airline profit cycles, \textbf{1995--2020}
-        \item Seven variables: operating profit, fuel, wages, RPM,
+   \begin{itemize}
+      \item \emph{Renold et al.: "Methodological Framework for a Deeper Understanding of Airline Proift Cycles in the Context of Disruptive Exogenous Impact", Journal of Air Transport Management, 2023}
+      \item Studies US airline profit cycles between 1995 and 2020
+      \item Data set consists of seven variables: operating profit, fuel, wages, RPM,
           load factor, yield, other expenses
-        \item \kmeans{} with $k=6$, PCA, system-dynamics modelling
-        \item \emph{Headline claim:} COVID-19 does \emph{not} permanently 
+      \item \kmeans{} with $k=6$, PCA, system-dynamics modelling
+      \item \emph{Headline claim:} COVID-19 does \emph{not} permanently 
 	  disrupt airline profit regimes: post-pandemic patterns revert
           to pre-COVID clusters.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \textbf{Two risks left unexamined}
-      \vspace{0.1cm}
-      \begin{enumerate}
-        \item The seven inputs are \teal{highly collinear} ---
-          secular growth drives them all. Does that distort the Euclidean
-          distances \kmeans{} partitions by?
-        \item The choice \teal{$k=6$ has no quantitative justification} ---
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Two Risks Left Unexamined}
+   \begin{enumerate}
+      \item The seven inputs are \teal{highly collinear} ---
+        secular growth drives them all. Does that distort the Euclidean
+        distances \kmeans{} partitions by?
+      \item The choice \teal{$k=6$ has no quantitative justification} ---
           no quality criterion, no alternative $k$ compared.
-      \end{enumerate}
-      \vspace{0.15cm}
-      \muted{If either is material, the regime labels --- and the headline
+    \end{enumerate}
+    \vspace{0.15cm}
+     \muted{If either is material, the regime labels --- and the headline
       claim --- cannot be taken at face value.}
-    \end{column}
-  \end{columns}
 \end{frame}
 
 
 \begin{frame}{Seven Variables, 2.46 Effective Dimensions}
   The first measurement: the \textbf{participation ratio} of the eigenvalue
-  spectrum --- how many dimensions actually carry signal.
+  spectrum to see how many dimensions actually carry signal.
   \vspace{0.2cm}
   \begin{equation*}
     \pr \;=\; \frac{\bigl(\sum_i \lambda_i\bigr)^2}{\sum_i \lambda_i^2}
@@ -440,7 +429,7 @@
   \end{columns}
   \vspace{0.15cm}
   \begin{itemize}
-    \item \teal{\ari{} = 1.000}: all 26 observations land in identical
+    \item \teal{\ari{} = 1.0}: all 26 observations land in identical
       clusters under the kernel map.
     \item COVID ({\color{purple}$\blacktriangle$}) becomes \emph{more}
       isolated --- \pc{4}'s yield collapse enters the pairwise distances of
