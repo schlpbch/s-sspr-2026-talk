@@ -61,7 +61,7 @@
   \vspace{0.18cm}
   {\color{ascTeal500}\rule{28pt}{2.4pt}\par}
   \vspace{0.30cm}
-  {\large\muted{The linearity certificate: How to show a dataset needs no kernel.}\par}
+  {\large\muted{The linearity certificate: How to show a dataset has no kernel.}\par}
   \vspace{0.85cm}
 	{\usebeamerfont{author}\usebeamercolor[fg]{author}Andreas Schlapbach (schlpbch@asc.engineering)\par}
   \vspace{0.10cm}
@@ -80,7 +80,7 @@
   \begin{itemize}
      \item{The kernel methods turn 28 age this year:  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as a kernel eigenvalue problem}, Neural Computation, 1998.}}
 
-    \item{But {\color{ascTeal600}How do you certify that a dataset contains none?}}
+    \item{But {\color{ascTeal600}How do you certify that a dataset contains no kernel?}}
 
     \item{A certified \emph{no} is a result: it licenses every linear tool
 	    downstream --- PCA, $k$-means in score space, linear ridge.}
@@ -92,11 +92,11 @@
 
 \begin{frame}{The Paper Under Audit}
    \begin{itemize}
-      \item \emph{Renold et al.: "Methodological Framework for a Deeper Understanding of Airline Profit Cycles in the Context of Disruptive Exogenous Impact", Journal of Air Transport Management, 2023}
-      \item Studies US airline profit cycles between 1995 and 2020
+      \item \emph{Renold et al.: "Methodological Framework for a Deeper Understanding of Airline Profit Cycles in the Context of Disruptive Exogenous Impact", Journal of Air Transport Management, 2023}.
+      \item Studies US airline profit cycles between 1995 and 2020.
       \item Data set consists of seven variables: operating profit, fuel, wages, RPM,
-          load factor, yield, other expenses
-      \item \kmeans{} with $k=6$, PCA, system-dynamics modelling
+          load factor, yield, other expenses.
+      \item They perform \kmeans{} with $k=6$, PCA and system-dynamics modelling.
       \item \emph{Headline claim:} COVID-19 does \emph{not} permanently 
 	  disrupt airline profit regimes: post-pandemic patterns revert
           to pre-COVID clusters.
@@ -423,7 +423,7 @@
   \end{columns}
   \vspace{0.15cm}
   \begin{itemize}
-    \item \teal{\ari{} = 1.0}: all 26 observations land in identical
+    \item \teal{\ari{} = 1.0}: All 26 observations land in identical
       clusters under the kernel map.
     \item COVID ({\color{purple}$\blacktriangle$}) becomes \emph{more}
       isolated --- \pc{4}'s yield collapse enters the pairwise distances of
@@ -536,9 +536,7 @@
 
 
 \begin{frame}{The Supervised Complement: Kernel Ridge Regression}
-  Structure said linear. Does nonlinear \emph{prediction} disagree?
-  Predict operating profit from the six other raw variables, LOOCV,
-  nested grid search for $\gamma, \alpha$.
+	Predict operating profit from the six other raw variables using \teal{kernel ridge regression} (LOOCV, nested grid search for $\gamma, \alpha$).
   \vspace{0.3cm}
   \begin{center}
   \small
@@ -592,7 +590,7 @@
 \begin{frame}{The Linearity Certificate, as a Check List}
   For any small, collinearity-prone panel you intend to cluster:
   \begin{enumerate}
-    \item \textbf{Measure Effective Dimensionality:} participation ratio of
+    \item \textbf{Measure Effective Dimensionality} via participation ratio of
       the eigenvalue spectrum. Low \pr{} $\Rightarrow$ expect a near-linear
       manifold and a distorted raw space.
     \item \textbf{Cluster on \pc{} scores}, and compare against raw-space
@@ -610,12 +608,16 @@
 
 
 \begin{frame}{Future Work}
+  Restraining the work to small sample sizes, the following directions are promising:
+
   \begin{itemize}
-    \item \textbf{Temporal Dynamics.} Hidden Markov models or regime-switching
-      VAR: quantify state persistence and transitions instead of static bands.
-    \item \textbf{Modern representation-learning baselines.} $t$-SNE, UMAP,
-      autoencoders, spectral and contrastive methods: does the certified
-      linear structure persist under representations that don't assume it?
+    \item \textbf{Small-sample rigor first.} Exact permutation tests on the 
+      silhouette peak and bootstrapped \pc{} loadings (sign-aligned) turn Findings II--IV from suggestive into certified.
+    \item \textbf{Temporal Dynamics, constrained.} With such few data, a Gaussian
+       HMM already over-parameterizes. Only Markov-switching Vector Auto Regression (VAR) with strong priors can be entertained.
+    \item \textbf{Representation-learning baselines, as supplement not proof.}
+      $t$-SNE/UMAP geometry is too perplexity-sensitive at $n=26$ to certify
+      anything; autoencoders would simply memorize.
     \item \textbf{Other transport sectors.} Public transport panels share the
       same secular-growth collinearity --- is the
       collinearity--silhouette-suppression pattern domain-general?
