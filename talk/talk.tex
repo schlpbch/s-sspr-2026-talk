@@ -218,7 +218,7 @@
 
 \begin{frame}{The Geometry Behind the Invariance}
   \begin{columns}[T]
-    \begin{column}{0.60\textwidth}
+    \begin{column}{0.38\textwidth}
       \centering
       \begin{tikzpicture}
       \begin{axis}[asc,
@@ -247,14 +247,12 @@
       \end{axis}
       \end{tikzpicture}
 
-      {\scriptsize\muted{3D-\pc{} space, 87.8\% of variance. Chronological
-      bands left to right:
+      {\scriptsize\muted{3D-\pc{} space, 87.8\% of variance. Bands:
       {\color{blue}1995--99}, {\color{orange}2000--05},
       {\color{green!70!black}2006--10}, {\color{brown}2011--14},
-      {\color{red}2015--19}; {\color{purple}2020} displaced.}}
+      {\color{red}2015--19}; {\color{purple}2020} }}
     \end{column}
     \begin{column}{0.38\textwidth}
-      \vspace{0.3cm}
       \begin{itemize}
         \item The six-cluster taxonomy is a \teal{temporal partition} along
           \pc{1} --- early losses $\to$ recovery $\to$ peak profit.
@@ -312,14 +310,12 @@
   \end{axis}
   \end{tikzpicture}
   \end{center}
-  \vspace{0.1cm}
+  \vspace{0.2cm}
   \begin{itemize}
     \item In 3D-\pc{} space the silhouette peaks at \teal{$k=3$}, $k=6$ scores 14\% worse. In 7D-raw the curve is
       \teal{flat}: the inflated growth axis suppresses the contrast.
     \item Three regimes: low-profit 1995--2005, recovery 2006--14, peak
       2015--19 (+ COVID outlier). $k=6$ is coherent but \emph{imposed}.
-    \item \muted{Suggestive, not conclusive: two internal indices, $n=26$, no
-      significance test.}
   \end{itemize}
 \end{frame}
 
@@ -569,19 +565,17 @@
   \begin{itemize}
     \item[{\color{ascTeal600}\checkmark}] \textbf{The headline claim survives.}
       Cluster assignments are invariant across spaces (\ari{} = 1.0);
-      the geometry behind Renold et al.'s regime labels is sound ---
-      collinearity's growth axis \emph{aligns} with the temporal partition
-      instead of cutting across it.
+      the geometry behind Renold et al.'s regime labels is sound.
     \item[{\color{ascTeal600}\checkmark}] \textbf{The manifold is certifiably
-      linear.} Six kernels, three families, one verdict --- reinforced by
+      linear.} Six kernels, three families, one verdict:reinforced by
       kernel ridge showing no nonlinear accuracy gain in-distribution.
     \item[{\color{ascSlate400}$\circ$}] \textbf{But the taxonomy is
       over-resolved.} The data structurally supports \teal{three} regimes;
       $k=6$ is imposed, defensible for year-by-year policy description, not
       recommended by the indices.
     \item[{\color{ascSlate400}$\circ$}] \textbf{Practical recommendation:}
-      in collinearity-prone panel data, cluster on \pc{} scores, not raw
-      variables --- the raw space \emph{suppresses} the model-selection
+      Cluster on \pc{} scores, not raw variables --- the raw space 
+      \emph{suppresses} the model-selection.
       signal.
   \end{itemize}
 \end{frame}
