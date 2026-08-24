@@ -61,22 +61,18 @@
   \vspace{0.18cm}
   {\color{ascTeal500}\rule{28pt}{2.4pt}\par}
   \vspace{0.30cm}
-  {\large\muted{The linearity certificate: How to show a dataset has no kernel.}\par}
+  {\large{The linearity certificate: How to show a dataset has no kernel.}\par}
   \vspace{0.85cm}
 	{\usebeamerfont{author}\usebeamercolor[fg]{author}Andreas Schlapbach (schlpbch@asc.engineering)\par}
   \vspace{0.10cm}
   {\usebeamerfont{institute}\usebeamercolor[fg]{institute}%
-    Swiss Federal Railways (SBB), Switzerland\footnotemark[1]\quad\textbullet\quad
+    Swiss Federal Railways (SBB), Switzerland /
     {\color{ascTeal600}asc.engineering}
     }
-  \vspace{0.55cm}
-  \footnotetext[1]{\tiny\color{ascSlate400}The views expressed are the author's
-    own and do not necessarily reflect the views or policies of SBB.}
 \end{frame}
 
 
-
-\begin{frame}{Kernel PCA turns 28}
+\begin{frame}{Kernel PCA turns 28 Years Old} 
   \begin{itemize}
      \item{The kernel methods turn 28 age this year:  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as a kernel eigenvalue problem}, Neural Computation, 1998.}}
 
@@ -605,17 +601,18 @@
   Restraining the work to small sample sizes, the following directions are promising:
 
   \begin{itemize}
-    \item \textbf{Small-sample rigor first.} Exact permutation tests on the 
+    \item \textbf{Small-sample Rigor First.} Exact permutation tests on the 
       silhouette peak and bootstrapped \pc{} loadings (sign-aligned) turn Findings II--IV from suggestive into certified.
-    \item \textbf{Temporal Dynamics, constrained.} With such few data, a Gaussian
+    \item \textbf{Temporal Dynamics, Constrained.} With such few data, a Gaussian
        HMM already over-parameterizes. Only Markov-switching Vector Auto Regression (VAR) with strong priors can be entertained.
-    \item \textbf{Representation-learning baselines, as supplement not proof.}
+    \item \textbf{Representation-learning Baselines, as Supplement not Proof.}
       $t$-SNE/UMAP geometry is too perplexity-sensitive at $n=26$ to certify
       anything; autoencoders would simply memorize.
-    \item \textbf{Other transport sectors.} Public transport panels share the
-      same secular-growth collinearity --- is the
-      collinearity--silhouette-suppression pattern domain-general?
-    \item Hint: Railways have profit cycles too.
+    \item \textbf{Applying our Methodology to Other Transport Sectors.} 
+      \begin{itemize}
+	 \item Can we show that the collinearity--silhouette-suppression pattern is domain-general?
+	 \item  Is it applicable to rail/public transport?
+     \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -626,7 +623,7 @@
     and when you claim it is linear, \textcolor{ascTeal600}{certify it}.}
   \vspace{0.7cm}
 
-  \muted{Kernel PCA, 28 years on, works as the audit tool for its own linear ancestor.}
+  Kernel PCA works as the audit tool for its own linear ancestor.
 
 \end{frame}
 
