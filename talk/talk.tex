@@ -47,7 +47,7 @@
 \title[Orthogonality \& Dimensionality in Airline Cluster Analysis]%
   {Orthogonality and Dimensionality in Airline Cluster Analysis using PCA and Kernel PCA}
 \author{Andreas Schlapbach(schlpbch@asc.engineering)}
-\date{S+SSPR 2026 --- Bern, August 24--26}
+\date{S+SSPR 2026, Bern, August 24--26}
 
 \begin{document}
 
@@ -63,7 +63,7 @@
   \vspace{0.30cm}
   {\large{The linearity certificate: How to show a dataset has no kernel.}\par}
   \vspace{0.85cm}
-	{\usebeamerfont{author}\usebeamercolor[fg]{author}Andreas Schlapbach (schlpbch@asc.engineering)\par}
+	{\usebeamerfont{author}\usebeamercolor[fg]{author}\teal{Andreas Schlapbach} (schlpbch@asc.engineering)\par}
   \vspace{0.10cm}
   {\usebeamerfont{institute}\usebeamercolor[fg]{institute}%
     Swiss Federal Railways (SBB), Switzerland /
@@ -74,12 +74,12 @@
 
 \begin{frame}{Kernel PCA turns 28 Years Old} 
   \begin{itemize}
-     \item{The kernel methods turn 28 age this year:  \muted{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as a kernel eigenvalue problem}, Neural Computation, 1998.}}
+    \item{The kernel methods turn 28 age this year:  \textbf{Sch\"olkopf, Smola \& M\"uller, \emph{Nonlinear component analysis as a kernel eigenvalue problem}, Neural Computation, 1998.}}
 
-    \item{But {\color{ascTeal600}How do you certify that a dataset contains no kernel?}}
+    \item{But \teal{How do you certify that a dataset contains no kernel?}}
 
     \item{A certified \emph{no} is a result: it licenses every linear tool
-	    downstream --- PCA, $k$-means in score space, linear ridge.}
+	    downstream (PCA, $k$-means in score space, linear ridge...)}
     \item{Papers rarely issue that certificate explicitly. This talk shows
 	    how, on a published study.}
   \end{itemize}
@@ -88,28 +88,25 @@
 
 \begin{frame}{The Paper Under Audit}
    \begin{itemize}
-      \item \emph{Renold et al.: "Methodological Framework for a Deeper Understanding of Airline Profit Cycles in the Context of Disruptive Exogenous Impact", Journal of Air Transport Management, 2023}.
+      \item Renold et al.: \emph{Methodological Framework for a Deeper Understanding 
+	  of Airline Profit Cycles in the Context of Disruptive Exogenous Impact}, 
+          Journal of Air Transport Management, 2023.
       \item Studies US airline profit cycles between 1995 and 2020.
-      \item Data set consists of seven variables: operating profit, fuel, wages, RPM,
-          load factor, yield, other expenses.
-      \item They perform \kmeans{} with $k=6$, PCA and system-dynamics modelling.
-      \item \emph{Headline claim:} COVID-19 does \emph{not} permanently 
-	  disrupt airline profit regimes: post-pandemic patterns revert
-          to pre-COVID clusters.
+      \item Data set consists of seven variables: \emph{operating profit}, \emph{fuel},
+	      \emph{wages}, \emph{revenue per mile}, \emph{load factor},
+		\emph{yield}, and \emph{other expenses}.
+	\item They perform \teal{\kmeans{} clustering with $k=6$, PCA} and system-dynamics modelling.
+      \item \emphf{Headline claim:} COVID-19 does \emph{not} permanently disrupt 
+          airline profit regimes: post-pandemic patterns revert to pre-COVID clusters.
     \end{itemize}
 \end{frame}
 
-
 \begin{frame}{Two Risks Left Unexamined}
    \begin{enumerate}
-      \item The seven inputs are \teal{highly collinear} ---
-        secular growth drives them all. Does that distort the Euclidean
-        distances \kmeans{} partitions by?
+      \item The seven inputs are \teal{highly collinear}: secular growth drives them all. 
       \item The choice \teal{$k=6$ has no quantitative justification} ---
           no quality criterion, no alternative $k$ compared.
     \end{enumerate}
-    \vspace{0.15cm}
-     \muted{If either is material, the regime labels claim cannot be taken at face value.}
 \end{frame}
 
 
@@ -124,10 +121,10 @@
   \end{equation*}
   \vspace{0.25cm}
   \begin{itemize}
-    \item Of seven nominal dimensions, $\sim$2.5 are real: \teal{severe
+    \item Of seven nominal dimensions, 2.46 are real: \teal{severe
       collinearity}, one dominant shared growth factor.
-    \item \textbf{Question:} Does a low \pr{} \emph{predict} a near-linear, low-dimensional manifold
-    \item \textbf{Plan:} establish the linear geometry, then attack it
+    \item \textbf{Question:} Does a low \pr{} \emph{predict} a near-linear, low-dimensional manifold?
+    \item \textbf{Plan:} Establish the linear geometry, then attack it
       with every kernel family we have. If the linear story survives, it is
       certified.
   \end{itemize}
@@ -171,7 +168,7 @@
 \begin{frame}{Finding I: Assignments Are Invariant Across Spaces}
   \begin{columns}[T]
     \begin{column}{0.56\textwidth}
-      \scriptsize
+      \small
       \setlength{\tabcolsep}{4pt}
       \begin{tabular}{@{}l l c c c@{}}
       \toprule
@@ -192,22 +189,9 @@
       \bottomrule
       \end{tabular}
       \vspace{0.25cm}
-
+      
       \small $k=6$ in 3D-\pc{} space reproduces the 7D-raw partition
       \teal{bit for bit}.
-    \end{column}
-    \begin{column}{0.40\textwidth}
-      \textbf{Why doesn't collinearity rearrange anything?}
-      \vspace{0.1cm}
-      \begin{itemize}
-        \item It stretches distances $\sim$3$\times$ \emph{along} \pc{1} ---
-          without reordering points \emph{within} it.
-        \item The six clusters are contiguous \emph{time bands} along \pc{1}:
-          stretched, but no year crosses a boundary.
-        \item Cross-sectional clusters (legacy vs.\ low-cost carriers) would
-          cut \emph{across} the growth axis --- there, distortion would be
-          severe.
-      \end{itemize}
     \end{column}
   \end{columns}
 \end{frame}
@@ -251,11 +235,11 @@
     \begin{column}{0.38\textwidth}
       \begin{itemize}
         \item The six-cluster taxonomy is a \teal{temporal partition} along
-          \pc{1} --- early losses $\to$ recovery $\to$ peak profit.
+          \pc{1}.
         \item Secondary structure: profit--wage tension (\pc{2}), fuel shocks
           (\pc{3}).
         \item COVID 2020 is a \teal{geometric singularity}, displaced by the
-          yield collapse (load factor $85\% \to 59\%$).
+          yield collapse.
       \end{itemize}
     \end{column}
   \end{columns}
@@ -323,24 +307,20 @@
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
       \begin{exampleblock}{Distance-based}
-        \small RBF ($\gamma$ by median pairwise distance)\\[2pt]
+        \small Radial-basis Function\\[2pt]
         Polynomial, degree 2\\[2pt]
         Polynomial, degree 3
       \end{exampleblock}
     \end{column}
     \begin{column}{0.31\textwidth}
       \begin{exampleblock}{Information-geometric}
-        \small Fisher--Mahalanobis:\\
-        $K_F(x,y) = x^{\top}\hat\Sigma^{-1}y$\\[2pt]
-        = PCA on whitened scores; amplifies \pc{4} by
-        $1/0.078 \approx 12.8\times$
+        \small Fisher--Mahalanobis
       \end{exampleblock}
     \end{column}
     \begin{column}{0.31\textwidth}
       \begin{exampleblock}{Graph-based}
         \small Diffusion $K=\exp(-\beta L)$\\
         on the 5-NN graph\\[2pt]
-        local connectivity instead of a distance formula
       \end{exampleblock}
     \end{column}
   \end{columns}
@@ -348,13 +328,11 @@
   \begin{itemize}
     \item Plus the \textbf{linear kernel} as baseline ($\equiv$ standard PCA).
     \item All bandwidths by \teal{median heuristics}
-    \item Three families fail for three \emph{different} reasons. Their agreement is evidence.
   \end{itemize}
 \end{frame}
 
 
-
-\begin{frame}{Linear PCA vs.\ RBF kernel PCA}
+\begin{frame}{Linear PCA vs.\ RBF Kernel PCA}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \centering
@@ -504,7 +482,6 @@
 \end{frame}
 
 
-
 \begin{frame}{Reading the Agreement}
   \textbf{The same shift, three different mechanisms:}
   \vspace{0.2cm}
@@ -519,40 +496,35 @@
   \vspace{0.35cm}
   \begin{exampleblock}{The certificate}
     Six kernels from three fundamentally different families agree with each
-    other --- and with linear PCA (\ari{} = 1.0 in 2D; \kpca{}2 resolves the
-    $C_3$--$C_5$ ambiguity exactly as \pc{2} does). \textbf{The manifold
-    contains no detectable curvature.} The absence of nonlinear structure is
-    itself the finding.
+    other and with linear PCA. \teal{The manifold contains no detectable 
+    curvature.} The absence of nonlinear structure is itself the finding.
   \end{exampleblock}
 \end{frame}
 
 
 \begin{frame}{The Supervised Complement: Kernel Ridge Regression}
-	Predict operating profit from the six other raw variables using \teal{kernel ridge regression} (LOOCV, nested grid search for $\gamma, \alpha$).
+  Using \teal{Kernel Ridge Regression} to predict operating profit from the six other raw variables.
   \vspace{0.3cm}
   \begin{center}
   \small
   \begin{tabular}{@{}l r r@{}}
   \toprule
-  \textbf{Model} & \textbf{$R^2$ (all years)} & \textbf{$R^2$ (excl.\ 2020)} \\
+  \textbf{Model} & \textbf{$R^2$ (excl.\ 2020)} & \textbf{$R^2$ (all years)} \\
   \midrule
-  Linear ridge                  & \textbf{0.881} & 0.831 \\
-  Kernel ridge (RBF)            & 0.592 & \textbf{0.836} \\
-  Kernel ridge (poly., deg.~2)  & 0.380 & 0.785 \\
+  Linear ridge                 & 0.831          & \textbf{0.811} \\
+  Kernel ridge (RBF)           & \textbf{0.836} & 0.592 \\
+  Kernel ridge (poly., deg.~2) & 0.380          & 0.380 \\
   \bottomrule
   \end{tabular}
   \end{center}
   \vspace{0.3cm}
   \begin{itemize}
-    \item \textbf{2020 excluded:} all three models comparable
-      ($R^2 = 0.79$--$0.84$) --- kernel flexibility buys
-      \teal{no predictive advantage}. In-distribution, the manifold is
-      linear.
+    \item \textbf{2020 excluded:} all three models perfom comparable
+      kernel flexibility buys \teal{no predictive advantage}. 
+      In-distribution, the manifold is linear.
     \item \textbf{2020 included:} kernels collapse, linear ridge does not.
-      2020's 65\% RPM/load-factor collapse sits far outside the training
-      manifold; similarity-based prediction reverts to the mean.
-    \item \muted{That collapse is kernel \emph{extrapolation} failing at a
-      genuine outlier --- not evidence of hidden curvature.}
+      That collapse is kernel \emph{extrapolation} failing at a
+      genuine outlier and not an evidence of hidden curvature.
   \end{itemize}
 \end{frame}
 
@@ -567,12 +539,11 @@
       kernel ridge showing no nonlinear accuracy gain in-distribution.
     \item[{\color{ascSlate400}$\circ$}] \textbf{But the taxonomy is
       over-resolved.} The data structurally supports \teal{three} regimes;
-      $k=6$ is imposed, defensible for year-by-year policy description, not
+      $k=6$ is imposed, defensible for year-by-year policy description, but \emhp{not}
       recommended by the indices.
     \item[{\color{ascSlate400}$\circ$}] \textbf{Practical recommendation:}
-      Cluster on \pc{} scores, not raw variables --- the raw space 
-      \emph{suppresses} the model-selection.
-      signal.
+      Cluster on \pc{} scores, not raw variables --- the raw space
+      \emph{suppresses} the model-selection signal.
   \end{itemize}
 \end{frame}
 
@@ -580,17 +551,17 @@
 \begin{frame}{The Linearity Certificate, as a Check List}
   For any small, collinearity-prone panel you intend to cluster:
   \begin{enumerate}
-    \item \textbf{Measure Effective Dimensionality} via participation ratio of
+    \item \teal{Measure effective dimensionality} via participation ratio of
       the eigenvalue spectrum. Low \pr{} $\Rightarrow$ expect a near-linear
       manifold and a distorted raw space.
-    \item \textbf{Cluster on \pc{} scores}, and compare against raw-space
+    \item \teal{Cluster on \pc{} scores}, and compare against raw-space
       assignments (\ari{}). Explain any invariance geometrically.
-    \item \textbf{Scan $k$ in the Clean Space:} internal indices in raw
+    \item \teal{Scan $k$ in the clean space:} internal indices in raw
       space can be suppressed by the collinear axis.
-    \item \textbf{Attack with Kernel Families that Fail Differently:}
+    \item \teal{Attack with kernel families that fail differently:}
       distance-based, information-geometric, graph-based; median-heuristic
       bandwidths, nothing tuned. Cross-family agreement is the certificate.
-    \item \textbf{Cross-check with Supervised Kernels:} kernel vs.\ linear
+    \item \teal{Cross-check with supervised kernels:} kernel vs.\ linear
       ridge under LOOCV; audit outliers for extrapolation effects before
       blaming curvature.
   \end{enumerate}
@@ -608,7 +579,7 @@
     \item \textbf{Representation-learning Baselines, as Supplement not Proof.}
       $t$-SNE/UMAP geometry is too perplexity-sensitive at $n=26$ to certify
       anything; autoencoders would simply memorize.
-    \item \textbf{Applying our Methodology to Other Transport Sectors.} 
+    \item \textbf{Applying our Methodology to Other Transport Sectors.}
       \begin{itemize}
 	 \item Can we show that the collinearity--silhouette-suppression pattern is domain-general?
 	 \item  Is it applicable to rail/public transport?
@@ -631,6 +602,14 @@
 %% Backup slides
 %% ============================================================
 \appendix
+
+
+\begin{frame}{Backup: Data}
+  \begin{figure}[htbp]
+    \centering
+    {\includegraphics[alt={Renolds data}, height=65mm]{figures/data-renold.png}}
+  \end{figure}
+\end{frame}
 
 \begin{frame}{Backup: Full Cluster-Quality Table}
   \begin{center}
