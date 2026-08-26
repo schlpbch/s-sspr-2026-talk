@@ -63,7 +63,7 @@
   \vspace{0.30cm}
   {\large{The linearity certificate: How to show a dataset has no kernel.}\par}
   \vspace{0.85cm}
-	{\usebeamerfont{author}\usebeamercolor[fg]{author}\teal{Andreas Schlapbach} (schlpbch@asc.engineering)\par}
+	{\usebeamerfont{author}\usebeamercolor[fg]{author}\teal{Andreas Schlapbach} (schlpbch@gmail.com)\par}
   \vspace{0.10cm}
   {\usebeamerfont{institute}\usebeamercolor[fg]{institute}%
     Swiss Federal Railways (SBB), Switzerland /
@@ -88,7 +88,7 @@
 
 \begin{frame}{The Paper Under Audit}
    \begin{itemize}
-      \item Renold et al.: \emph{Methodological Framework for a Deeper Understanding 
+      \item Renold et al.: \textbf{Methodological Framework for a Deeper Understanding 
 	  of Airline Profit Cycles in the Context of Disruptive Exogenous Impact}, 
           Journal of Air Transport Management, 2023.
       \item Studies US airline profit cycles between 1995 and 2020.
@@ -130,7 +130,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{The Three Spaces}
+\begin{frame}{PCA: The Three Spaces}
   All 26 standardized annual observations, clustered in three representations:
   
   \begin{center}
@@ -189,9 +189,12 @@
       \bottomrule
       \end{tabular}
       \vspace{0.25cm}
-      
-      \small $k=6$ in 3D-\pc{} space reproduces the 7D-raw partition
-      \teal{bit for bit}.
+	
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+        \item The \textbf{Adjusted Rand Index (ARI)} is a chance-corrected version of the Rand Index, which counts pairs of points agreeing (both together or both separate) across two partitions.
+      \end{itemize}
     \end{column}
   \end{columns}
 \end{frame}
@@ -243,6 +246,21 @@
       \end{itemize}
     \end{column}
   \end{columns}
+\end{frame}
+
+\begin{frame}{Recapitulation of Silhouette Coefficient and Davies--Bouldin Index}
+  \begin{itemize}
+    \item \textbf{Silhouette Coefficient}:
+    \[
+      \sil = \frac{b - a}{\max(a,b)}
+    \]
+    where $a$ is mean intra-cluster distance and $b$ is mean distance to the nearest other cluster; averaged over all points for the score. Ranges $-1$ to $1$, higher is better.
+    \item \textbf{Davies--Bouldin Index}:
+    \[
+      \db = \frac{1}{k}\sum_{i=1}^{k} \max_{j\neq i} \frac{s_i + s_j}{d(c_i, c_j)}
+    \]
+    where $s_i$ is the average distance of points in cluster $i$ to its centroid $c_i$, and $d(c_i, c_j)$ is the distance between centroids $c_i$ and $c_j$. Lower values indicate tighter, better-separated clusters.
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Finding II: The Clean Space Reveals $k=3$}
@@ -483,17 +501,8 @@
 
 
 \begin{frame}{Reading the Agreement}
-  \textbf{The same shift, three different mechanisms:}
+  Three different mechanisms, same shift speaks \teal{one voice}.
   \vspace{0.2cm}
-  \begin{itemize}
-    \item \textbf{RBF / polynomial:} curvature fitting in feature space.
-    \item \textbf{Fisher:} eigenvalue-inverse weighting: \pc{4} amplified
-      $12.8\times$, enlarging COVID's yield-collapse signal.
-    \item \textbf{Graph diffusion:} pure 5-NN connectivity: similarity mass
-      routed to $C_5$, the actual graph neighbors, overriding the global
-      \pc{1} alignment with $C_0$.
-  \end{itemize}
-  \vspace{0.35cm}
   \begin{exampleblock}{The certificate}
     Six kernels from three fundamentally different families agree with each
     other and with linear PCA. \teal{The manifold contains no detectable 
@@ -568,26 +577,6 @@
 \end{frame}
 
 
-\begin{frame}{Future Work}
-  Restraining the work to small sample sizes, the following directions are promising:
-
-  \begin{itemize}
-    \item \textbf{Small-sample Rigor First.} Exact permutation tests on the 
-      silhouette peak and bootstrapped \pc{} loadings (sign-aligned) turn Findings II--IV from suggestive into certified.
-    \item \textbf{Temporal Dynamics, Constrained.} With such few data, a Gaussian
-       HMM already over-parameterizes. Only Markov-switching Vector Auto Regression (VAR) with strong priors can be entertained.
-    \item \textbf{Representation-learning Baselines, as Supplement not Proof.}
-      $t$-SNE/UMAP geometry is too perplexity-sensitive at $n=26$ to certify
-      anything; autoencoders would simply memorize.
-    \item \textbf{Applying our Methodology to Other Transport Sectors.}
-      \begin{itemize}
-	 \item Can we show that the collinearity--silhouette-suppression pattern is domain-general?
-	 \item  Is it applicable to rail/public transport?
-     \end{itemize}
-  \end{itemize}
-\end{frame}
-
-
 \begin{frame}[plain]
   \vspace*{1.1cm}
   \bigstatement{Understand your data before you model it ---\\
@@ -596,6 +585,19 @@
 
   Kernel PCA works as the audit tool for its own linear ancestor.
 
+\end{frame}
+
+
+\begin{frame}{Future Work}
+  Restraining the work to small sample sizes, the following directions are promising:
+
+  \begin{itemize}
+    \item \textbf{Temporal Dynamics, Constrained.} With such few data, a Gaussian
+       HMM already over-parameterizes. Markov-switching Vector Auto Regression (VAR) with strong priors could be explored.
+    \item \textbf{Representation-learning Baselines, as Supplement not Proof.}
+      $t$-Distributed Stochastic Neighbor Embedding ()$t$-SNE)/Uniform Manifold Approximation and Projection (UMAP) geometry is too perplexity-sensitive at $n=26$ to certify anything; autoencoders would simply memorize.
+    \item \textbf{Applying our Methodology to Other Transport Sectors, e.g. public transport.} Hint: rail is less homogeneous than air.
+  \end{itemize}
 \end{frame}
 
 %% ============================================================
